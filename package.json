@@ -1,5 +1,5 @@
 {
-  "name": "trello-slack-notification",
+  "name": "trello-slack-notify",
   "version": "0.0.1",
   "devDependencies": {
     "@google/clasp": "^2.3.0",
