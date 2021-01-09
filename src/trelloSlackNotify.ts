@@ -1,28 +1,22 @@
 import { createApiUrl } from './trello';
 import getConfig from './getConfig';
+import fetchBoardChange from './fetchBoardChange';
 import DoPost = GoogleAppsScript.Events.DoPost;
-import DoGet = GoogleAppsScript.Events.DoGet;
 import URLFetchRequestOptions = GoogleAppsScript.URL_Fetch.URLFetchRequestOptions;
 import HTTPResponse = GoogleAppsScript.URL_Fetch.HTTPResponse;
 
 function doPost(evt: DoPost) {
-  const postBody = evt.postData.contents;
+  const postBody: string = evt.postData.contents;
   Logger.log(postBody);
+
+  fetchBoardChange(postBody);
+
   return HtmlService.createHtmlOutput(`<p>POST Request</p>`);
-}
-
-function doGet(evt: DoGet) {
-  Logger.log(evt);
-  return HtmlService.createHtmlOutput(`<p>Get Request</p>`);
-}
-
-function getConfigTest(propertyName: string) {
-  return getConfig('c');
 }
 
 function createWebhook() {
   const appProps: AppProps = PropertiesService.getScriptProperties().getProperties();
-  const WEBHOOK_CALLBACK_URL = getConfig('WEBHOOK_CALLBACK_URL');
+  const WEBHOOK_CALLBACK_URL: string = getConfig('WEBHOOK_CALLBACK_URL');
 
   const requestOptions: URLFetchRequestOptions = {
     method: 'post',
