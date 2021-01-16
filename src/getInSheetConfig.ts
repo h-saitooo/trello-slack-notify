@@ -23,24 +23,28 @@ export function getConfig(keyName: string) {
 
 export function convertUsername(
   username: string,
-  convertTo: 'trello' | 'slack' = 'slack'
+  convertFrom: 'label' | 'trello' | 'trelloId' | 'slack' = 'trello',
+  convertTo: 'label' | 'trello' | 'slack' = 'slack'
 ): string | null {
   const spreadsheet: Spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   const usersListSheet: Sheet | null = spreadsheet.getSheetByName('Users');
   // 0: User Label (not use)
   // 1: Slack Username
   // 2: Trello Username
-  const columuPosition = { slack: 1, trello: 2 };
+  // 3: Trello User Id
+  const columuPosition = { label: 0, slack: 1, trello: 2, trelloId: 3 };
 
   if (usersListSheet === null) return null;
 
   const range: Range = usersListSheet.getDataRange();
   const rangeValues = range.getValues();
+  const searchCol = columuPosition[convertFrom];
+  const targetCol = columuPosition[convertTo];
 
   for (let i = 0; i < rangeValues.length; i++) {
-    const itrValue: string = rangeValues[i][searchColumn];
+    const itrValue: string = rangeValues[i][searchCol];
     if (itrValue === username) {
-      return rangeValues[i][targetColumn];
+      return rangeValues[i][targetCol];
       break;
     }
   }

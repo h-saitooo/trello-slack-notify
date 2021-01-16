@@ -1,18 +1,15 @@
-import { createApiUrl, convertUsername } from './trello';
-import { getConfig } from './getInSheetConfig.ts';
-import fetchBoardChange from './fetchBoardChange';
+import { createApiUrl } from './trelloModules';
+import { getConfig } from './getInSheetConfig';
+import { fetchBoardChange } from './fetchBoardChange';
 import DoPost = GoogleAppsScript.Events.DoPost;
 import URLFetchRequestOptions = GoogleAppsScript.URL_Fetch.URLFetchRequestOptions;
 import HTTPResponse = GoogleAppsScript.URL_Fetch.HTTPResponse;
 
 function doPost(evt: DoPost) {
-  // const postBody: string = evt.postData.contents;
-  // Logger.log(postBody);
+  const postBody: string = evt.postData.contents;
+  Logger.log(postBody);
 
-  // fetchBoardChange(postBody);
-
-  const parameter = evt.parameter;
-  convertUsername(parameter.username, 'slack');
+  fetchBoardChange(postBody);
 
   return HtmlService.createHtmlOutput(`<p>POST Request</p>`);
 }

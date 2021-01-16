@@ -6,7 +6,7 @@ declare namespace TrelloWebhook {
   namespace Action {
     interface WebhookResponse {
       model?: { [key: string]: any };
-      action: TrelloActionData;
+      action: ActionBody;
     }
 
     interface ActionBody {
@@ -45,8 +45,10 @@ declare namespace TrelloWebhook {
     }
     interface ActionCard {
       idList?: string;
+      pos?: Float;
+      id?: string;
       name: string;
-      idShort: Integer;
+      idShort?: Integer;
       shortLink: string;
     }
     interface ActionList {
@@ -88,4 +90,6 @@ interface SLACK_WEBHOOK_PAYLOAD {
   username?: string;
   icon_emoji?: string;
   text: string;
+  parse: 'none';
+  as_user?: boolean;
 }

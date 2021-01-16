@@ -1,9 +1,10 @@
+import { convertUsername } from './getInSheetConfig';
 import UrlFetchRequestOptions = GoogleAppsScript.URL_Fetch.URLFetchRequestOptions;
 import HTTPResponse = GoogleAppsScript.URL_Fetch.HTTPResponse;
 
-export function fetchBoardChange(postBody: TrelloWebhookBody): void {
-  const actionData: TrelloWebhookBody = JSON.parse(postBody);
-  const actionType: TrelloActionType = actionData.action.type;
+export function fetchBoardChange(postBody: string): void {
+  const actionData: TrelloWebhook.Action.WebhookResponse = JSON.parse(postBody);
+  const actionType: TrelloWebhook.Action.ActionType = actionData.action.type;
   const card: TrelloWebhook.Action.ActionCard = {
     id: actionData.action.data.card.id,
     name: actionData.action.data.card.name,
@@ -15,10 +16,10 @@ export function fetchBoardChange(postBody: TrelloWebhookBody): void {
 }
 
 function updateCard(
-  card: Card,
+  card: TrelloWebhook.Action.ActionCard,
   actionData: TrelloWebhook.Action.WebhookResponse
 ): boolean {
-  const action: TrelloWebhook.Action.ActionData = actionData.action;
+  const action: TrelloWebhook.Action.ActionBody = actionData.action;
 
   if (!action.data.old.idList) {
     Logger.log('This update is not card move');
@@ -29,14 +30,23 @@ function updateCard(
   const listBeforeName: string = action.data.listBefore.name;
   const listAfterName: string = action.data.listAfter.name;
   const cardUrl = `https://trello.com/c/${card.shortLink}/`;
-  const postText = `カード *<${cardUrl}|${card.name}>* が「${listBeforeName}」から「${listAfterName}」へ「${moveExecutorId}さん」によって移動されました。`;
+  const postText = `カード *<${cardUrl}|${
+    card.name
+  }>* が「${listBeforeName}」から「${listAfterName}」へ「@${convertUsername(
+    moveExecutorId,
+    'trelloId',
+    'slack'
+  )}さん」によって移動されました。`;
 
   toSlackPost(postText);
   return true;
 }
 
-function createCard(card: Card, actionData: TrelloWebhookBody) {
-  const action: TrelloWebhook.Action.ActionData = actionData.action;
+function createCard(
+  card: TrelloWebhook.Action.ActionCard,
+  actionData: TrelloWebhook.Action.WebhookResponse
+) {
+  const action: TrelloWebhook.Action.ActionBody = actionData.action;
 }
 
 function toSlackPost(postText: string): HTTPResponse {
