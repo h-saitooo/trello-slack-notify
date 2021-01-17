@@ -1,6 +1,10 @@
-import { createApiUrl } from './trelloModules';
+import { createApiUrl, getMemberId } from './trelloModules';
 import { getConfig } from './getInSheetConfig';
 import { fetchBoardChange } from './fetchBoardChange';
+import Spreadsheet = GoogleAppsScript.Spreadsheet.Spreadsheet;
+import SpreadsheetApp = GoogleAppsScript.Spreadsheet.SpreadsheetApp;
+import Sheet = GoogleAppsScript.Spreadsheet.Sheet;
+import Range = GoogleAppsScript.Spreadsheet.Range;
 import DoPost = GoogleAppsScript.Events.DoPost;
 import URLFetchRequestOptions = GoogleAppsScript.URL_Fetch.URLFetchRequestOptions;
 import HTTPResponse = GoogleAppsScript.URL_Fetch.HTTPResponse;
@@ -34,4 +38,29 @@ function createWebhook() {
   Logger.log(response);
 
   return response;
+}
+
+async function getTrelloMemberId() {
+  const spreadsheet: Spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const usersListSheet: Sheet | null = spreadsheet.getSheetByName('Users');
+  const usernameCol = 2;
+  const apiIdCol = 3;
+
+  if (usersListSheet === null) return null;
+
+  const range: Range = usersListSheet.getDataRange();
+  const rangeValues = range.getValues();
+
+  for (let i = 0; i < rangeValues.length; i++) {
+    const itrValue = rangeValues[i][apiIdCol];
+    if (itrValue !== '') continue;
+
+    const memberId: string = getTrelloMemberId(rangeValues[i][usernameCol]);
+    usersListSheet.getRange(i, usernameCol).setValue(memberId);
+
+    Logger.log(`
+      Username: ${itrValue[i][usernameCol]},
+      UserId:  ${memberId}
+    `);
+  }
 }
