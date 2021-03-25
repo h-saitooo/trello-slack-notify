@@ -45,7 +45,6 @@ export function convertUsername(
     const itrValue: string = rangeValues[i][searchCol];
     if (itrValue === username) {
       return rangeValues[i][targetCol];
-      break;
     }
   }
 

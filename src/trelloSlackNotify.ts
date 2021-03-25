@@ -2,7 +2,6 @@ import { createApiUrl, getMemberId } from './trelloModules';
 import { getConfig } from './getInSheetConfig';
 import { fetchBoardChange } from './fetchBoardChange';
 import Spreadsheet = GoogleAppsScript.Spreadsheet.Spreadsheet;
-import SpreadsheetApp = GoogleAppsScript.Spreadsheet.SpreadsheetApp;
 import Sheet = GoogleAppsScript.Spreadsheet.Sheet;
 import Range = GoogleAppsScript.Spreadsheet.Range;
 import DoPost = GoogleAppsScript.Events.DoPost;
@@ -51,16 +50,18 @@ async function getTrelloMemberId() {
   const range: Range = usersListSheet.getDataRange();
   const rangeValues = range.getValues();
 
-  for (let i = 0; i < rangeValues.length; i++) {
-    const itrValue = rangeValues[i][apiIdCol];
+  for (const row in rangeValues) {
+    const itrValue = rangeValues[row][apiIdCol];
     if (itrValue !== '') continue;
 
-    const memberId: string = getTrelloMemberId(rangeValues[i][usernameCol]);
-    usersListSheet.getRange(i, usernameCol).setValue(memberId);
+    const memberId: string = await getMemberId(rangeValues[row][usernameCol]);
+    // usersListSheet.getRange(`${rangeValues[row][apiIdCol]}`).setValue(memberId);
 
     Logger.log(`
-      Username: ${itrValue[i][usernameCol]},
-      UserId:  ${memberId}
+      Username: ${itrValue},
+      UserId: ${memberId}
     `);
+
+    return rangeValues[row][apiIdCol];
   }
 }

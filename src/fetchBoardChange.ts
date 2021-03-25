@@ -32,11 +32,11 @@ function updateCard(
   const cardUrl = `https://trello.com/c/${card.shortLink}/`;
   const postText = `カード *<${cardUrl}|${
     card.name
-  }>* が「${listBeforeName}」から「${listAfterName}」へ「@${convertUsername(
+  }>* が「${listBeforeName}」から「${listAfterName}」へ「<@${convertUsername(
     moveExecutorId,
     'trelloId',
     'slack'
-  )}さん」によって移動されました。`;
+  )}>さん」によって移動されました。`;
 
   toSlackPost(postText);
   return true;
